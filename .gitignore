@@ -1,0 +1,4 @@
+*.log
+networklog.txt
+*.swp
+.history
