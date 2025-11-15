@@ -1,24 +1,25 @@
 # Project Summary: Linux Networking Lab
 
 ## 🔍 Problem Statement
-Security teams need visibility into network activity at the host level. Traditional network tools may not be installed by default, and new cloud hosts often have little baseline visibility.
+Cloud workloads often lack basic network visibility at the host layer. Without foundational tools, teams cannot easily inspect open ports, active connections, routing paths, or real-time packet activity.
 
 ## 🎯 Project Purpose
-This project demonstrates foundational Linux networking inspection tools that help identify open ports, active connections, traffic routes, and real-time packet data.
+This project provides hands-on experience with Linux network inspection commands, packet capture utilities, and simulated attacker behavior. It establishes a lightweight baseline for monitoring network activity on a single EC2 instance.
 
 ## 🛠 Methodology
-- Deployed Ubuntu EC2 in AWS
-- Installed `nmap`, `tcpdump`, `net-tools`, `iproute2`
-- Created a bash script to collect data
-- Scheduled via cron to log every hour
-- Simulated port scans to observe packet-level behavior
+- Deployed an Ubuntu EC2 instance
+- Installed `nmap`, `tcpdump`, `iproute2`, and `net-tools`
+- Built `netwatch.sh` to log interfaces, listeners, routes, and packet captures
+- Scheduled the script via cron to run hourly
+- Simulated SYN scans using `nmap` to observe traffic in packet captures
 
 ## ✅ Results
-- Captured real-time SYN scans using `tcpdump`
-- Logged active listeners and interfaces
-- Verified traffic snapshots in `networklog.txt`
+- Captured live SYN scan attempts using `tcpdump`
+- Logged active network listeners and connections
+- Produced hourly snapshots in `networklog.txt`
+- Demonstrated host-level detection techniques for reconnaissance activity
 
 ## 🔁 Recommendations
-- Integrate alerts using `logwatch`, `fail2ban`, or ELK
-- Expand to multi-interface traffic capture
-- Push results to centralized monitoring via SIEM
+- Forward logs to a SIEM (e.g., ELK, Wazuh, CloudWatch)
+- Add alerting for unexpected ports or abnormal traffic
+- Expand to multi-interface packet capture and deeper protocol analysis
