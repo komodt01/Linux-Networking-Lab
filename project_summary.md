@@ -1,79 +1,106 @@
-# Project Summary – Linux Networking & Packet Analysis Lab
+# Security Requirements
 
-## Problem
+**Project:** Linux Networking & Packet Analysis Lab  
+**Environment:** AWS EC2 / Ubuntu
 
-Security and cloud teams need visibility into what is happening at the host network layer.
+## 1. Security Objectives
 
-Without basic network inspection capabilities, it can be difficult to determine which services are listening, which connections are active, how traffic is routed, or what network activity reaches a system.
+The lab should provide safe, repeatable visibility into network activity occurring at the Linux host layer.
 
-## Lab Objective
+The primary objectives are to:
 
-This lab provides hands-on experience using native Linux networking tools to inspect host network state and observe packet activity.
+- Identify network interfaces and addresses
+- Identify listening ports and services
+- Identify established network connections
+- Understand host routing information
+- Capture selected network packets for analysis
+- Generate controlled network activity for observation
+- Support recurring network-state collection
 
-A controlled `nmap` SYN scan is used to generate traffic that can then be examined with `tcpdump`.
+## 2. Derived Requirements
 
-## Methodology
+| Category | Requirement |
+|---|---|
+| Network Visibility | The lab should provide visibility into interfaces, addresses, listeners, connections, and routes. |
+| Packet Analysis | The lab should support packet capture for authorized analysis of network activity. |
+| Controlled Testing | Network scanning should be performed only against systems where testing is authorized. |
+| Monitoring | Network-state information should be collected in a repeatable manner. |
+| Logging | Snapshot output should be capable of being written to a local log file. |
+| Operational Safety | Packet capture and scanning should remain limited to the defined lab environment. |
 
-The lab uses an Ubuntu EC2 instance to:
+## 3. Controls Implemented
 
-- Inspect network interfaces and IP addresses
-- Identify listening ports and sockets
-- Review established TCP connections
-- Examine the host routing table
-- Review interface-level traffic statistics
-- Capture TCP SYN packets
-- Generate controlled scan traffic with `nmap`
-- Schedule recurring network snapshots with cron
+The lab implements the following controls and activities:
 
-## Implementation
+- Linux network inspection using `ip`
+- Listening-port and connection inspection using `ss`
+- Routing-table inspection using `ip route`
+- Interface statistics using `ip -s link`
+- TCP SYN packet capture using `tcpdump`
+- Controlled SYN scanning using `nmap`
+- Repeatable network snapshots using `netwatch.sh`
+- Optional recurring execution through cron
 
-The `netwatch.sh` script provides repeatable network-state collection.
+## 4. Packet Capture Requirements
 
-It uses:
+Packet capture should:
 
-- `ip addr` for interface and address information
-- `ss` for listening sockets and established connections
-- `ip route` for routing information
-- `ip -s link` for interface statistics
-- `tcpdump` for packet capture
+- Be limited to authorized systems and interfaces
+- Capture only the traffic needed for the exercise
+- Avoid unnecessary collection of sensitive traffic
+- Use packet-count or other appropriate limits for a small lab
+- Be treated as potentially sensitive security data
 
-The captured output can be redirected to a local log file for recurring snapshots.
+The lab uses a limited five-packet TCP SYN capture for the network-observation exercise.
 
-## Results
+## 5. Scanning Requirements
 
-The lab demonstrates how host-level tools can provide visibility into:
+`nmap` scanning should be limited to:
 
-- Network interfaces
+- The lab system itself
+- Systems explicitly authorized for testing
+- Controlled test scenarios
+
+The purpose of scanning is to generate observable network activity for analysis, not to perform unauthorized reconnaissance.
+
+## 6. Logging Requirements
+
+Network snapshots should capture sufficient information to support basic analysis, including:
+
+- Interface information
 - Listening services
-- Active connections
-- Routing behavior
-- Interface traffic
-- TCP SYN activity generated during controlled scanning
+- Established connections
+- Routing information
+- Interface statistics
+- Selected packet activity
 
-The exercise provides practical familiarity with network telemetry available directly from a Linux host.
+If recurring logging is enabled, log files should be managed to prevent unnecessary disk consumption.
 
-## Security Relevance
+## 7. Monitoring Limitations
 
-The lab reinforces the distinction between **network visibility, detection, and response**.
+The lab provides host-level visibility but does not require:
 
-Host-level inspection provides visibility into network activity, but additional capabilities are required to centrally collect telemetry, identify suspicious behavior, generate alerts, and take automated response actions.
-
-## Limitations
-
-This lab does not implement:
-
-- Centralized logging
+- Centralized log collection
 - SIEM integration
 - Network intrusion detection
-- Automated anomaly detection
-- Automated blocking
-- Long-term packet analysis
-- Enterprise network monitoring
+- Automated alerting
+- Automated response
+- Long-term packet retention
 
-These capabilities would require additional architecture and operational controls.
+Those capabilities are outside the scope of this lab.
 
-## Key Lesson
+## 8. Residual Risks
 
-Understanding network behavior at the host layer provides a foundation for broader cloud and enterprise security monitoring.
+| Risk | Mitigation |
+|---|---|
+| Packet captures contain sensitive information | Limit capture scope and retain only what is required |
+| Log files consume disk space | Use appropriate log rotation or retention |
+| Scanning is performed against unauthorized systems | Restrict testing to explicitly authorized targets |
+| Host-level visibility is incomplete | Use centralized monitoring and network-security controls in production |
+| Network activity is observed but not automatically detected | Integrate telemetry with appropriate detection and alerting systems when required |
 
-Security professionals should be able to distinguish between what a system is **configured to allow**, what the host is **currently experiencing**, and what security tooling can **detect and respond to**.
+## 9. Security Principle
+
+> Network visibility is a foundational security capability, but visibility alone does not provide detection or response.
+
+Production environments should combine host-level network visibility with centralized monitoring, identity controls, network segmentation, detection capabilities, and appropriate response processes.
