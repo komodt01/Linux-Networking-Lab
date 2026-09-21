@@ -1,29 +1,33 @@
 #!/bin/bash
 
+# Linux Networking & Packet Analysis Lab
+# Collects a basic snapshot of host network state and selected packet activity.
+
 echo "=== Network Snapshot - $(date) ==="
-echo ""
+echo
 
-echo "[IP Addresses]"
-ip a
+echo "[IP Addresses and Interfaces]"
+ip addr show
+echo
 
-echo ""
-echo "[Open Ports and Listeners]"
+echo "[Listening Ports and Sockets]"
 ss -tulnp
+echo
 
-echo ""
-echo "[Established Connections]"
-netstat -tnp | grep ESTABLISHED
+echo "[Established TCP Connections]"
+ss -tnp state established
+echo
 
-echo ""
 echo "[Routing Table]"
 ip route show
+echo
 
-echo ""
-echo "[Top 5 Talkers (ifconfig)]"
-ifconfig
+echo "[Interface Statistics]"
+ip -s link
+echo
 
-echo ""
-echo "[TCPDUMP - Capturing 5 Packets on eth0]"
-sudo tcpdump -i eth0 -nn -c 5 2>/dev/null
+echo "[TCP SYN Packet Capture - 5 Packets]"
+sudo tcpdump -i any 'tcp[tcpflags] & tcp-syn != 0' -nn -c 5 2>/dev/null
 
+echo
 echo "------------------------------------"
