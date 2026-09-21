@@ -1,97 +1,114 @@
-Project Overview
+# Linux Networking & Packet Analysis Lab
 
-The Linux Networking Lab demonstrates foundational host-level network visibility and packet inspection techniques using native Linux tools.
-It provides a lightweight, cloud-friendly way to understand open ports, live connections, routing paths, and packet behavior inside an AWS EC2 instance.
+## Overview
 
-This lab is designed for cloud engineers, security analysts, and architects who need hands-on familiarity with Linux network telemetry in real-world environments.
+This hands-on lab explores foundational Linux network visibility and packet-analysis techniques using an Ubuntu EC2 instance.
 
-💼 Business Value
-This project strengthens host-level security by providing visibility into:
-Open ports and active listeners
-Live and established connections
-Routing behavior and interface activity
-Packet-level inspection during port scans
-Organizations benefit from improved monitoring, threat detection awareness, and baseline network observability—capabilities essential for incident response, SOC operations, and compliance frameworks such as NIST 800-53 (AU, CM), CIS Benchmarks, and ISO 27001 A.8 & A.12.
+The objective is to understand what is happening at the host network layer by inspecting interfaces, listening services, active connections, routing information, and captured network traffic.
 
-🧰 Tools & Utilities
-ss / netstat – Identify open ports and active connections
-ip / ifconfig – Interface and routing visibility
-tcpdump – Packet capture for traffic inspection
-nmap – SYN scan simulation for attacker-like activity
-cron – Scheduled hourly snapshots
-EC2 (Ubuntu) – Execution environment
+The lab also uses a controlled `nmap` scan to generate network activity that can be observed with `tcpdump`.
 
-🛠️ Features
-Automated network snapshot script (netwatch.sh)
+## Security Objectives
 
-Logs include:
-Interfaces
-Listeners
-Routes
-Established connections
-Packet capture output
-Controlled attacker simulation with nmap
-Hourly cron-based logging
-Creates a historical timeline of network activity
+The lab focuses on:
 
-Repository Structure
-linux-networking-lab/
-│── netwatch.sh
-│── README.md
-│── project_summary.md
-│── security_requirements.md
-│── risks_and_mitigations.md
-│── networklog.txt (optional sample)
-└── .gitignore
+- Establishing basic visibility into Linux network configuration
+- Identifying listening ports and active connections
+- Understanding local routing information
+- Observing network packets at the host interface
+- Using controlled scanning to generate traffic for analysis
+- Automating recurring network-state collection
 
-🚀 Setup Instructions
-1. Connect to EC2
-ssh -i your-key.pem ubuntu@your-ec2-ip
+## Tools Used
 
-2. Install Required Tools
-sudo apt update && \
-sudo apt install -y net-tools iproute2 tcpdump nmap iptables
+| Tool | Purpose |
+|---|---|
+| `ip` | Inspect interfaces, addresses, and routing |
+| `ss` | Identify listening ports and active connections |
+| `netstat` | Inspect established TCP connections |
+| `tcpdump` | Capture and inspect network packets |
+| `nmap` | Generate controlled scan traffic for observation |
+| `cron` | Schedule recurring network snapshots |
+| Ubuntu EC2 | Hands-on execution environment |
 
-3. Add the Script
-Upload netwatch.sh and make it executable:
-chmod +x netwatch.sh
+## Network Snapshot Script
 
-4. Configure Hourly Logging
-sudo crontab -e
+`netwatch.sh` collects a basic snapshot of the host network state.
 
-Add this line:
+The script reports:
 
-15 * * * * /home/ubuntu/netwatch.sh >> /home/ubuntu/networklog.txt 2>&1
+- IP addresses and interfaces
+- Listening TCP and UDP sockets
+- Established TCP connections
+- Routing information
+- A small packet capture from the host interface
 
-🧪 Simulating a Port Scan
-Local SYN Scan
+The output can be redirected to a log file for recurring snapshots.
+
+## Packet Analysis
+
+The lab uses `tcpdump` to observe traffic at the network interface.
+
+A controlled SYN scan can be generated with `nmap`:
+
+```bash
 sudo nmap -sS -Pn 127.0.0.1
+```
 
-Remote SYN Scan
-From another machine:
-nmap -sS -Pn <ec2-public-ip>
+A scan against an EC2 host can also be performed from another authorized system when the lab environment permits it.
 
-Logs will show:
-SYN packets
-Listener responses
-Route behavior
-Packet metadata from tcpdump
+The purpose is to observe how reconnaissance traffic appears at the host network layer rather than to perform unauthorized scanning.
 
-📄 Output
-All results are written to:
-networklog.txt
+## Scheduled Collection
 
-Capturing:
-Interface summary
-Active connections
-Listeners and services
-Routing table
-5-packet tcpdump snapshot
-Timestamped snapshots for trend analysis
+The script can be scheduled with cron to create recurring network snapshots.
 
-🧠 Next Steps (Future Enhancements)
-Forward logs to CloudWatch, ELK, or Azure Sentinel
-Add anomaly detection for unexpected ports or IPs
-Auto-block malicious IPs using iptables
-Extend to multi-interface environments
-Build Grafana dashboards for visual analysis
+Example:
+
+```text
+15 * * * * /home/ubuntu/netwatch.sh >> /home/ubuntu/networklog.txt 2>&1
+```
+
+This creates a basic historical record of the network state observed by the host.
+
+Recurring collection is useful for understanding how network visibility can move from a one-time troubleshooting command toward repeatable operational monitoring.
+
+## Security Considerations
+
+This lab is intended for controlled environments and authorized systems only.
+
+Network inspection and scanning tools can generate sensitive information and should be used according to organizational policies and applicable authorization requirements.
+
+Packet captures should also be handled carefully because network traffic may contain sensitive information.
+
+The lab does not implement centralized logging, automated alerting, or automated response.
+
+## Limitations
+
+This is a focused host-level networking lab rather than a production network-monitoring platform.
+
+It does not provide:
+
+- Centralized SIEM integration
+- Network intrusion detection
+- Automated anomaly detection
+- Automated blocking of suspicious sources
+- Long-term log management
+- Full packet-flow analysis
+- Enterprise network telemetry
+
+Those capabilities would require additional architecture and operational controls.
+
+## Key Lessons
+
+Host-level network visibility provides an important foundation for security analysis.
+
+Understanding interfaces, routes, listeners, connections, and packet behavior helps security and cloud professionals understand what is occurring beneath higher-level cloud security controls.
+
+The lab also demonstrates the difference between **observing network activity** and **detecting or responding to a security event**. Visibility is a prerequisite for those capabilities, but it does not by itself constitute detection or response.
+
+## Lab Scope
+
+This repository intentionally remains a focused hands-on networking and packet-analysis lab.
+
+Its purpose is to build practical familiarity with Linux network inspection and packet capture while providing a foundation for understanding broader cloud and enterprise network-security monitoring.
